@@ -4,14 +4,14 @@ import Header from '@/components/Header';
 import AlertsSnackbar from '@/components/AlertsSnackbar';
 import AlertsDialog from '@/components/AlertsDialog';
 import DropZone from '@/components/DropZone';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Typography } from '@mui/material';
 import { ApostilleTransaction } from '@/libs/ApostilleTransaction';
 import { SSSWindow } from 'sss-module';
 import { nodeList } from '@/consts/nodeList';
 import { connectNode } from '@/utils/connectNode';
 import { firstValueFrom } from 'rxjs';
 import { RepositoryFactoryHttp } from 'symbol-sdk';
-
+import Checkbox from '@mui/material/Checkbox';
 declare const window: SSSWindow;
 
 function Create(): JSX.Element {
@@ -27,6 +27,7 @@ function Create(): JSX.Element {
   const [openDialog, setOpenDialog] = useState<boolean>(false); //AlertsDialogの設定(個別)
 
   const [file, setFile] = useState<File | null>(null);
+  const [isOwner, setIsOwner] = useState(false);
 
   const handleCreateClick = () => {
     setOpenDialog(false);
@@ -53,7 +54,7 @@ function Create(): JSX.Element {
       file.name,
       window.SSS.activePublicKey,
       {
-        isOwner: false,
+        isOwner,
         metadata: {
           description: 'test description',
           title: 'test title',
@@ -94,7 +95,17 @@ function Create(): JSX.Element {
       <Box display='flex' flexDirection='column' alignItems='center' marginTop='80px'>
         <Box sx={{ width: '800px' }}>
           <DropZone setFile={setFile} file={file} />
-          <Box display='flex' justifyContent='end' sx={{ width: '100%', marginTop: '32px' }}>
+          <Box
+            display='flex'
+            justifyContent='space-between'
+            sx={{ width: '100%', marginTop: '32px' }}>
+            <Box display={'flex'} alignItems={'center'}>
+              <Checkbox
+                checked={isOwner}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setIsOwner(e.target.checked)}
+              />
+              <Typography>オーナーになる</Typography>
+            </Box>
             <Button variant='contained' onClick={() => setOpenDialog(true)} disabled={!file}>
               作成する
             </Button>

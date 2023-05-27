@@ -46,9 +46,7 @@ function Audit(): JSX.Element {
   const { address } = router.query;
 
   const [file, setFile] = useState<File | null>(null);
-  const [hash, setHash] = useState<string>(
-    'CA2546E3E8FA7DEF75DDABFF9A0203DB70745BBD061F1B98DE9BA1F543C661EA'
-  );
+  const [hash, setHash] = useState<string>('');
   const [publicKey, setPublicKey] = useState('');
 
   useEffect(() => {
@@ -58,6 +56,23 @@ function Audit(): JSX.Element {
       if (NODE === '') return undefined;
       const data = await axios.get(`${NODE}/accounts/${address}`).then((res) => res.data);
       setPublicKey(data.account.publicKey);
+
+      const repo = new RepositoryFactoryHttp(NODE, {
+        websocketUrl: NODE.replace('http', 'ws') + '/ws',
+        websocketInjected: WebSocket,
+      });
+      const txRepo = repo.createTransactionRepository();
+
+      const tx = await txRepo
+        .search({
+          group: TransactionGroup.Confirmed,
+          address: Address.createFromRawAddress(`${address}`),
+        })
+        .toPromise();
+      if (!tx) return;
+      const h = tx.data[0].transactionInfo?.hash;
+      console.log({ h });
+      setHash(`${h}`);
     };
     f();
   }, [address]);
