@@ -14,6 +14,7 @@ import LooksOneIcon from '@mui/icons-material/LooksOne';
 import LooksTwoIcon from '@mui/icons-material/LooksTwo';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
+import { Looks3 } from '@mui/icons-material';
 
 function LeftDrawer(props: {
   openLeftDrawer: boolean;
@@ -67,6 +68,20 @@ function LeftDrawer(props: {
                   <LooksTwoIcon />
                 </ListItemIcon>
                 <ListItemText primary={'Apostilleの監査'} />
+              </ListItemButton>
+            </ListItem>
+          </List>
+          <List>
+            <ListItem disablePadding>
+              <ListItemButton
+                onClick={() => {
+                  router.push('/mypage');
+                  setOpenLeftDrawer(false);
+                }}>
+                <ListItemIcon>
+                  <Looks3 />
+                </ListItemIcon>
+                <ListItemText primary={'マイページ'} />
               </ListItemButton>
             </ListItem>
           </List>

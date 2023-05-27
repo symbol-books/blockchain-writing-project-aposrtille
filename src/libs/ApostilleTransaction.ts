@@ -12,7 +12,7 @@ import {
 import { ApostilleAccount } from './ApostilleAccount';
 import { epochAdjustment } from '@/consts/blockchainProperty';
 import { ApostilleOption } from './ApostilleOption';
-import { MetadataKey, getMetadataKey } from './MetadataKey';
+import { MetadataKey, MetadataKeyHelper } from './MetadataKey';
 
 export class ApostilleTransaction {
   private constructor(
@@ -54,12 +54,12 @@ export class ApostilleTransaction {
     ).toAggregate(this.apostilleAccount.account.publicAccount);
   }
 
-  private createMetadataTransaction(key: MetadataKey, value: string) {
+  private createMetadataTransaction(key: string, value: string) {
     const metadataValue = Convert.utf8ToUint8(value);
     return AccountMetadataTransaction.create(
       Deadline.create(epochAdjustment),
       this.apostilleAccount.account.address,
-      getMetadataKey(key),
+      MetadataKeyHelper.keyToKeyId(key),
       metadataValue.length,
       metadataValue,
       152

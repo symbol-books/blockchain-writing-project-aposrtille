@@ -3,26 +3,14 @@ import LeftDrawer from '@/components/LeftDrawer';
 import Header from '@/components/Header';
 import AlertsSnackbar from '@/components/AlertsSnackbar';
 import AlertsDialog from '@/components/AlertsDialog';
-import { ClientPrivateKey, ClientPublicKey, ClientAddress } from '@/globalState/atoms';
-import { useRecoilState } from 'recoil';
 import DropZone from '@/components/DropZone';
 import { Box, Button } from '@mui/material';
 import { ApostilleTransaction } from '@/libs/ApostilleTransaction';
-import { ApostilleAccount } from '@/libs/ApostilleAccount';
 import { SSSWindow } from 'sss-module';
-import { epochAdjustment, generationHash } from '@/consts/blockchainProperty';
 import { nodeList } from '@/consts/nodeList';
 import { connectNode } from '@/utils/connectNode';
-import { filter, firstValueFrom, merge, tap } from 'rxjs';
-import {
-  Account,
-  Address,
-  AggregateTransaction,
-  Deadline,
-  PlainMessage,
-  RepositoryFactoryHttp,
-  TransferTransaction,
-} from 'symbol-sdk';
+import { firstValueFrom } from 'rxjs';
+import { RepositoryFactoryHttp } from 'symbol-sdk';
 
 declare const window: SSSWindow;
 
