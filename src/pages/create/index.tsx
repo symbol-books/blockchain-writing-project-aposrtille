@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import LeftDrawer from '@/components/LeftDrawer';
 import Header from '@/components/Header';
 import AlertsSnackbar from '@/components/AlertsSnackbar';
@@ -12,6 +12,7 @@ import { connectNode } from '@/utils/connectNode';
 import { firstValueFrom } from 'rxjs';
 import { RepositoryFactoryHttp } from 'symbol-sdk';
 import Checkbox from '@mui/material/Checkbox';
+import { MetadataKey, MetadataKeyHelper } from '@/libs/MetadataKey';
 declare const window: SSSWindow;
 
 function Create(): JSX.Element {
@@ -66,9 +67,12 @@ function Create(): JSX.Element {
 
     window.SSS.setTransaction(transaction);
 
-    const signedTx = await window.SSS.requestSignWithCosignatories([
-      apostilleTransaction.apostilleAccount.account,
-    ]);
+    const cosignatories = [apostilleTransaction.apostilleAccount.account];
+    if (isOwner) {
+      cosignatories.push(apostilleTransaction.multisigAccount);
+    }
+
+    const signedTx = await window.SSS.requestSignWithCosignatories(cosignatories);
     await firstValueFrom(txRepo.announce(signedTx));
   };
 

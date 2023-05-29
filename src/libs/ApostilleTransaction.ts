@@ -1,4 +1,5 @@
 import {
+  Account,
   AccountMetadataTransaction,
   AggregateTransaction,
   Convert,
@@ -15,12 +16,16 @@ import { ApostilleOption } from './ApostilleOption';
 import { MetadataKey, MetadataKeyHelper } from './MetadataKey';
 
 export class ApostilleTransaction {
+  public readonly multisigAccount: Account;
   private constructor(
     public readonly apostilleAccount: ApostilleAccount,
     private readonly txMsg: string,
     private readonly fileName: string,
     private readonly option?: ApostilleOption
-  ) {}
+  ) {
+    this.multisigAccount = Account.generateNewAccount(152);
+  }
+
   public static create(
     blob: ArrayBuffer,
     fileName: string,
@@ -29,7 +34,8 @@ export class ApostilleTransaction {
   ) {
     const apostilleAccount = ApostilleAccount.create(fileName, owner);
     const signedHash = apostilleAccount.getSignedHash(blob);
-    const txMsg = `fe4e545983${signedHash}`; // fe4e545983 : checkSum
+    const hashFuncId = '83';
+    const txMsg = `fe4e5459${hashFuncId}${signedHash}`; // fe4e5459 : checkSum , 83 : sha256 , {signedHash} : signedHash
     return new ApostilleTransaction(apostilleAccount, txMsg, fileName, option);
   }
 
@@ -46,9 +52,9 @@ export class ApostilleTransaction {
   private createOwnerTransaction() {
     return MultisigAccountModificationTransaction.create(
       Deadline.create(epochAdjustment),
-      1,
-      1,
-      [this.apostilleAccount.owner.address],
+      2,
+      2,
+      [this.apostilleAccount.owner.address, this.multisigAccount.address],
       [],
       152
     ).toAggregate(this.apostilleAccount.account.publicAccount);
@@ -69,32 +75,34 @@ export class ApostilleTransaction {
   private createOptionTransactions(): InnerTransaction[] {
     const txs: Transaction[] = [];
 
-    const fileNameMetadataTransaction = this.createMetadataTransaction(
-      MetadataKey.filename,
-      this.fileName
-    );
+    const fileNameMetadataTransaction = this.createMetadataTransaction('filename', this.fileName);
     txs.push(fileNameMetadataTransaction);
 
-    if (!this.option) return txs;
+    if (this.option) {
+      if (this.option.metadata) {
+        Object.entries(this.option.metadata).forEach(([key, value]) => {
+          console.log({ key, value });
+        });
 
-    if (this.option.metadata?.description) {
-      const descriptionMetadataTransaction = this.createMetadataTransaction(
-        MetadataKey.description,
-        this.option.metadata.description
-      );
-      txs.push(descriptionMetadataTransaction);
-    }
-    if (this.option.metadata?.title) {
-      const titleMetadataTransaction = this.createMetadataTransaction(
-        MetadataKey.title,
-        this.option.metadata.title
-      );
-      txs.push(titleMetadataTransaction);
-    }
-
-    if (this.option.isOwner) {
-      const multisigTx = this.createOwnerTransaction();
-      txs.push(multisigTx);
+        if (this.option.metadata.description) {
+          const descriptionMetadataTransaction = this.createMetadataTransaction(
+            'description',
+            this.option.metadata.description
+          );
+          txs.push(descriptionMetadataTransaction);
+        }
+        if (this.option.metadata.title) {
+          const titleMetadataTransaction = this.createMetadataTransaction(
+            'title',
+            this.option.metadata.title
+          );
+          txs.push(titleMetadataTransaction);
+        }
+      }
+      if (this.option.isOwner) {
+        const multisigTx = this.createOwnerTransaction();
+        txs.push(multisigTx);
+      }
     }
 
     return txs;

@@ -5,7 +5,6 @@ export const audit = (blob: ArrayBuffer, payload: string, account: PublicAccount
   const hashedData = sha256.update(blob).hex();
   const message = parseMessage(payload);
   const isValid = account.verifySignature(hashedData, message.signedHash);
-  console.log({ isValid });
   return isValid;
 };
 

@@ -3,7 +3,6 @@ import LeftDrawer from '@/components/LeftDrawer';
 import { nodeList } from '@/consts/nodeList';
 import { MetadataKey, MetadataKeyHelper } from '@/libs/MetadataKey';
 import { connectNode } from '@/utils/connectNode';
-import { List } from '@mui/icons-material';
 import {
   Box,
   ListItemButton,
@@ -89,11 +88,7 @@ function MyPage(): JSX.Element {
             const data = {
               address: m[0].metadataEntry.targetAddress?.plain(),
               fileName: m
-                .filter(
-                  (m) =>
-                    m.metadataEntry.scopedMetadataKey.toHex() ===
-                    MetadataKeyHelper.keyToKeyId(MetadataKey.filename).toHex()
-                )
+                .filter((m) => m.metadataEntry.scopedMetadataKey.toHex() === MetadataKey.filename)
                 .map((m) => m.metadataEntry.value)[0],
             };
             return data;
