@@ -4,7 +4,7 @@ import Header from '@/components/Header';
 import AlertsSnackbar from '@/components/AlertsSnackbar';
 import AlertsDialog from '@/components/AlertsDialog';
 import DropZone from '@/components/DropZone';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, TextField, Typography } from '@mui/material';
 import { ApostilleTransaction } from '@/libs/ApostilleTransaction';
 import { SSSWindow } from 'sss-module';
 import { nodeList } from '@/consts/nodeList';
@@ -17,30 +17,31 @@ declare const window: SSSWindow;
 
 function Create(): JSX.Element {
   //共通設定
-  const [progress, setProgress] = useState<boolean>(false); //ローディングの設定
   const [openLeftDrawer, setOpenLeftDrawer] = useState<boolean>(false); //LeftDrawerの設定
   const [openSnackbar, setOpenSnackbar] = useState<boolean>(false); //AlertsSnackbarの設定
   const [snackbarSeverity, setSnackbarSeverity] = useState<'error' | 'success'>('error'); //AlertsSnackbarの設定
   const [snackbarMessage, setSnackbarMessage] = useState<string>(''); //AlertsSnackbarの設定
-  const [dialogMessage, setDialogMessage] = useState<string>(''); //AlertsDialogの設定(共通)
 
   //ページ個別設定
-  const [openDialog, setOpenDialog] = useState<boolean>(false); //AlertsDialogの設定(個別)
 
   const [file, setFile] = useState<File | null>(null);
   const [isOwner, setIsOwner] = useState(false);
+  const [title, setTitle] = useState('');
 
   const handleCreateClick = () => {
-    setOpenDialog(false);
-    createApostille().then(() => {
-      setSnackbarMessage('snackbar message');
-      setSnackbarSeverity('success');
-      setOpenSnackbar(true);
+    createApostille().then((apostilleTransaction) => {
+      if (!!apostilleTransaction) {
+        setSnackbarMessage(
+          `Apostilleを作成しました。 Address: ${apostilleTransaction.apostilleAccount.account.address.plain()}`
+        );
+        setSnackbarSeverity('success');
+        setOpenSnackbar(true);
+      }
     });
   };
 
   const createApostille = async () => {
-    if (file === null) return;
+    if (file === null) return undefined;
 
     const NODE = await connectNode(nodeList);
     if (NODE === '') return undefined;
@@ -57,8 +58,7 @@ function Create(): JSX.Element {
       {
         isOwner,
         metadata: {
-          description: 'test description',
-          title: 'test title',
+          title,
         },
       }
     );
@@ -74,6 +74,7 @@ function Create(): JSX.Element {
 
     const signedTx = await window.SSS.requestSignWithCosignatories(cosignatories);
     await firstValueFrom(txRepo.announce(signedTx));
+    return apostilleTransaction;
   };
 
   return (
@@ -87,18 +88,18 @@ function Create(): JSX.Element {
         snackbarSeverity={snackbarSeverity}
         snackbarMessage={snackbarMessage}
       />
-      <AlertsDialog
-        openDialog={openDialog}
-        setOpenDialog={setOpenDialog}
-        handleAgreeClick={() => {
-          handleCreateClick();
-        }}
-        dialogTitle='作成しますか？'
-        dialogMessage={dialogMessage}
-      />
       <Box display='flex' flexDirection='column' alignItems='center' marginTop='80px'>
         <Box sx={{ width: '800px' }}>
           <DropZone setFile={setFile} file={file} />
+          <Box marginTop='32px'>
+            <TextField
+              label='Title'
+              placeholder='Apostilleのタイトルを入力してください'
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              fullWidth
+            />
+          </Box>
           <Box
             display='flex'
             justifyContent='space-between'
@@ -110,7 +111,7 @@ function Create(): JSX.Element {
               />
               <Typography>オーナーになる</Typography>
             </Box>
-            <Button variant='contained' onClick={() => setOpenDialog(true)} disabled={!file}>
+            <Button variant='contained' onClick={handleCreateClick} disabled={!file}>
               作成する
             </Button>
           </Box>

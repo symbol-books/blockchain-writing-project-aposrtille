@@ -13,7 +13,7 @@ import {
 import { ApostilleAccount } from './ApostilleAccount';
 import { epochAdjustment } from '@/consts/blockchainProperty';
 import { ApostilleOption } from './ApostilleOption';
-import { MetadataKey, MetadataKeyHelper } from './MetadataKey';
+import { MetadataKeyHelper } from './MetadataKey';
 
 export class ApostilleTransaction {
   public readonly multisigAccount: Account;
@@ -65,7 +65,7 @@ export class ApostilleTransaction {
     return AccountMetadataTransaction.create(
       Deadline.create(epochAdjustment),
       this.apostilleAccount.account.address,
-      MetadataKeyHelper.keyToKeyId(key),
+      MetadataKeyHelper.generateUInt64KeyFromKey(key),
       metadataValue.length,
       metadataValue,
       152
@@ -82,22 +82,24 @@ export class ApostilleTransaction {
       if (this.option.metadata) {
         Object.entries(this.option.metadata).forEach(([key, value]) => {
           console.log({ key, value });
+          const tx = this.createMetadataTransaction(key, value);
+          txs.push(tx);
         });
 
-        if (this.option.metadata.description) {
-          const descriptionMetadataTransaction = this.createMetadataTransaction(
-            'description',
-            this.option.metadata.description
-          );
-          txs.push(descriptionMetadataTransaction);
-        }
-        if (this.option.metadata.title) {
-          const titleMetadataTransaction = this.createMetadataTransaction(
-            'title',
-            this.option.metadata.title
-          );
-          txs.push(titleMetadataTransaction);
-        }
+        // if (this.option.metadata.description) {
+        //   const descriptionMetadataTransaction = this.createMetadataTransaction(
+        //     'description',
+        //     this.option.metadata.description
+        //   );
+        //   txs.push(descriptionMetadataTransaction);
+        // }
+        // if (this.option.metadata.title) {
+        //   const titleMetadataTransaction = this.createMetadataTransaction(
+        //     'title',
+        //     this.option.metadata.title
+        //   );
+        //   txs.push(titleMetadataTransaction);
+        // }
       }
       if (this.option.isOwner) {
         const multisigTx = this.createOwnerTransaction();

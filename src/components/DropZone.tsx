@@ -64,8 +64,14 @@ function DropZone(props: {
         display='flex'
         justifyContent='center'
         alignItems='center'>
-        <Box sx={{ height: '400px' }}>
-          <img src={URL.createObjectURL(file)} alt={file.name} height='100%' />
+        <Box
+          sx={{
+            height: '400px',
+            '> img': {
+              objectFit: 'contain',
+            },
+          }}>
+          <img src={URL.createObjectURL(file)} alt={file.name} height='100%' width='100%' />
         </Box>
         <Box position='absolute' top='20px' right='20px'>
           <Box

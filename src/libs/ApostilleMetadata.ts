@@ -1,4 +1,3 @@
 export interface ApostilleMetadata {
-  title?: string;
-  description?: string;
+  [key: string]: string;
 }

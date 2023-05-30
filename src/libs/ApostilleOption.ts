@@ -1,6 +1,8 @@
 import { ApostilleMetadata } from './ApostilleMetadata';
 
 export interface ApostilleOption {
-  metadata?: ApostilleMetadata;
+  metadata?: {
+    [key: string]: string;
+  };
   isOwner?: boolean;
 }
