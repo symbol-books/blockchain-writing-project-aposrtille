@@ -97,7 +97,7 @@ function MyPage(): JSX.Element {
         <Header setOpenLeftDrawer={setOpenLeftDrawer} />
         <LeftDrawer openLeftDrawer={openLeftDrawer} setOpenLeftDrawer={setOpenLeftDrawer} />
         <Box display='flex' flexDirection='column' alignItems='center' marginTop='80px'>
-          <Typography>You don't have ApostilleAccount</Typography>
+          <Typography>You don&apos;t have ApostilleAccount</Typography>
         </Box>
       </>
     );
