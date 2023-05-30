@@ -12,7 +12,8 @@ const keyToNameMap = {
 
 export class MetadataKeyHelper {
   public static getKeyNameByKeyId(keyId: UInt64) {
-    return keyToNameMap[keyId.toHex()] || keyId.toHex();
+    const keyIdHex = keyId.toHex();
+    return keyToNameMap[keyIdHex] || keyIdHex;
   }
 
   public static generateUInt64KeyFromKey(key: string) {

@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import LeftDrawer from '@/components/LeftDrawer';
 import Header from '@/components/Header';
 import AlertsSnackbar from '@/components/AlertsSnackbar';
-import AlertsDialog from '@/components/AlertsDialog';
 import DropZone from '@/components/DropZone';
 import { Box, Button, TextField, Typography } from '@mui/material';
 import { ApostilleTransaction } from '@/libs/ApostilleTransaction';
@@ -12,7 +11,6 @@ import { connectNode } from '@/utils/connectNode';
 import { firstValueFrom } from 'rxjs';
 import { RepositoryFactoryHttp } from 'symbol-sdk';
 import Checkbox from '@mui/material/Checkbox';
-import { MetadataKey, MetadataKeyHelper } from '@/libs/MetadataKey';
 declare const window: SSSWindow;
 
 function Create(): JSX.Element {
@@ -59,6 +57,7 @@ function Create(): JSX.Element {
         isOwner,
         metadata: {
           title,
+          filename: file.name,
         },
       }
     );

@@ -1,12 +1,10 @@
 import Header from '@/components/Header';
 import LeftDrawer from '@/components/LeftDrawer';
 import { nodeList } from '@/consts/nodeList';
-import { MetadataKey, MetadataKeyHelper } from '@/libs/MetadataKey';
+import { MetadataKey } from '@/libs/MetadataKey';
 import { connectNode } from '@/utils/connectNode';
 import {
   Box,
-  ListItemButton,
-  ListItemText,
   Paper,
   Table,
   TableBody,
@@ -14,10 +12,8 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
 } from '@mui/material';
-import axios from 'axios';
-import { Router, useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { SSSWindow } from 'sss-module';
 import { Address, RepositoryFactoryHttp, TransactionGroup } from 'symbol-sdk';
@@ -29,27 +25,14 @@ type ApostilleInfo = {
 };
 
 function MyPage(): JSX.Element {
-  const [progress, setProgress] = useState<boolean>(false); //ローディングの設定
   const [openLeftDrawer, setOpenLeftDrawer] = useState<boolean>(false); //LeftDrawerの設定
-  const [openSnackbar, setOpenSnackbar] = useState<boolean>(false); //AlertsSnackbarの設定
-  const [snackbarSeverity, setSnackbarSeverity] = useState<'error' | 'success'>('error'); //AlertsSnackbarの設定
-  const [snackbarMessage, setSnackbarMessage] = useState<string>(''); //AlertsSnackbarの設定
-  const [dialogMessage, setDialogMessage] = useState<string>(''); //AlertsDialogの設定(共通)
 
-  const [address, setAddress] = useState('');
-  const [multisigAddresses, setMultisigAddresses] = useState<Address[]>([]);
   const router = useRouter();
 
   const [apostilleInfo, setApostilleInfo] = useState<ApostilleInfo[]>([]);
 
   useEffect(() => {
     const address = window.SSS.activeAddress;
-    setAddress(address);
-    // axios
-    //   .get('/api/fetch-all-apostille', { params: { address } })
-    //   .then((r) => r.data)
-    //   .then(console.log);
-
     const f = async () => {
       const NODE = await connectNode(nodeList);
       if (NODE === '') return undefined;
@@ -63,15 +46,15 @@ function MyPage(): JSX.Element {
       const info = await multisigRepo
         .getMultisigAccountInfo(Address.createFromRawAddress(address))
         .toPromise();
-      const addresses = info?.multisigAddresses ?? [];
+      const apostilleAddresses = info?.multisigAddresses ?? [];
 
-      const addressPromise = await Promise.all(addresses).then((addresses) =>
+      const addressPromise = await Promise.all(apostilleAddresses).then((addresses) =>
         addresses.map((address) => accountRepo.getAccountInfo(address).toPromise())
       );
 
-      const accounts = await Promise.all(addressPromise);
+      const apostilleAccounts = await Promise.all(addressPromise);
 
-      const accountsPromise = accounts.map(async (account) => {
+      const accountsPromise = apostilleAccounts.map(async (account) => {
         const r = await metadataRepo
           .search({
             targetAddress: account?.address,

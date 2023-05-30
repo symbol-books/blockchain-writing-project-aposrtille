@@ -1,11 +1,6 @@
 import React, { useState } from 'react';
 import LeftDrawer from '@/components/LeftDrawer';
 import Header from '@/components/Header';
-import AlertsSnackbar from '@/components/AlertsSnackbar';
-import AlertsDialog from '@/components/AlertsDialog';
-import { createAccount } from '@/utils/createAccount';
-import { ClientPrivateKey, ClientPublicKey, ClientAddress } from '@/globalState/atoms';
-import { useRecoilState } from 'recoil';
 import { Box, Button, TextField } from '@mui/material';
 import { useRouter } from 'next/router';
 
@@ -36,8 +31,8 @@ function Audit(): JSX.Element {
             />
           </Box>
           <Box display='flex' justifyContent='end' sx={{ width: '100%', marginTop: '32px' }}>
-            <Button variant='contained' onClick={handleAuditClick}>
-              監査する
+            <Button variant='contained' onClick={handleAuditClick} disabled={address.length !== 39}>
+              監査ページへ進む
             </Button>
           </Box>
         </Box>

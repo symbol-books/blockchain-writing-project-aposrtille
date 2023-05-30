@@ -15,7 +15,6 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import axios from 'axios';
 import { nodeList } from '@/consts/nodeList';
 import { getTimeStamp } from '@/utils/getTimeStamp';
 import {
@@ -64,35 +63,49 @@ function Audit(): JSX.Element {
   useEffect(() => {
     if (!address) return;
     const f = async () => {
-      const NODE = await connectNode(nodeList);
-      if (NODE === '') return undefined;
-      const repo = new RepositoryFactoryHttp(NODE, {
-        websocketUrl: NODE.replace('http', 'ws') + '/ws',
-        websocketInjected: WebSocket,
-      });
+      try {
+        const NODE = await connectNode(nodeList);
+        if (NODE === '') return undefined;
+        const repo = new RepositoryFactoryHttp(NODE, {
+          websocketUrl: NODE.replace('http', 'ws') + '/ws',
+          websocketInjected: WebSocket,
+        });
 
-      const accountRepo = repo.createAccountRepository();
-      const account = await accountRepo
-        .getAccountInfo(Address.createFromRawAddress(`${address}`))
-        .toPromise();
+        const accountRepo = repo.createAccountRepository();
+        const account = await accountRepo
+          .getAccountInfo(Address.createFromRawAddress(`${address}`))
+          .toPromise();
 
-      if (!account) return;
+        if (!account) return;
 
-      setPublicKey(account.publicKey);
-      const txRepo = repo.createTransactionRepository();
+        setPublicKey(account.publicKey);
+        const txRepo = repo.createTransactionRepository();
 
-      const tx = await txRepo
-        .search({
-          group: TransactionGroup.Confirmed,
-          address: Address.createFromRawAddress(`${address}`),
-          order: Order.Asc,
-        })
-        .toPromise();
-      console.log({ tx });
-      if (!tx) return;
-      const h = tx.data[0].transactionInfo?.hash;
-      console.log({ h });
-      setHash(`${h}`);
+        const tx = await txRepo
+          .search({
+            group: TransactionGroup.Confirmed,
+            address: Address.createFromRawAddress(`${address}`),
+            order: Order.Asc,
+          })
+          .toPromise();
+        console.log({ tx });
+        if (!tx) return;
+        const h = tx.data[0].transactionInfo?.hash;
+        console.log({ h });
+
+        if (!h) {
+          setSnackbarSeverity('error');
+          setSnackbarMessage('Apostille Account ではありません。');
+          setOpenSnackbar(true);
+          return;
+        }
+        setHash(h);
+      } catch (e) {
+        console.log(e);
+        setSnackbarSeverity('error');
+        setSnackbarMessage('Apostille Account ではありません。');
+        setOpenSnackbar(true);
+      }
     };
     f();
   }, [address]);

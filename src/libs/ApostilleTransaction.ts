@@ -20,7 +20,6 @@ export class ApostilleTransaction {
   private constructor(
     public readonly apostilleAccount: ApostilleAccount,
     private readonly txMsg: string,
-    private readonly fileName: string,
     private readonly option?: ApostilleOption
   ) {
     this.multisigAccount = Account.generateNewAccount(152);
@@ -36,7 +35,7 @@ export class ApostilleTransaction {
     const signedHash = apostilleAccount.getSignedHash(blob);
     const hashFuncId = '83';
     const txMsg = `fe4e5459${hashFuncId}${signedHash}`; // fe4e5459 : checkSum , 83 : sha256 , {signedHash} : signedHash
-    return new ApostilleTransaction(apostilleAccount, txMsg, fileName, option);
+    return new ApostilleTransaction(apostilleAccount, txMsg, option);
   }
 
   private createCoreTransaction() {
@@ -75,15 +74,13 @@ export class ApostilleTransaction {
   private createOptionTransactions(): InnerTransaction[] {
     const txs: Transaction[] = [];
 
-    const fileNameMetadataTransaction = this.createMetadataTransaction('filename', this.fileName);
-    txs.push(fileNameMetadataTransaction);
-
     if (this.option) {
       if (this.option.metadata) {
         Object.entries(this.option.metadata).forEach(([key, value]) => {
-          console.log({ key, value });
-          const tx = this.createMetadataTransaction(key, value);
-          txs.push(tx);
+          if (value !== '') {
+            const tx = this.createMetadataTransaction(key, value);
+            txs.push(tx);
+          }
         });
 
         // if (this.option.metadata.description) {
