@@ -8,7 +8,7 @@ export const audit = (blob: ArrayBuffer, payload: string, account: PublicAccount
   return isValid;
 };
 
-const parseMessage = (txMessage: string) => {
+export const parseMessage = (txMessage: string) => {
   const regex = /^fe4e5459(\d{2})(\w+)/;
   const result = txMessage.match(regex);
   if (result) {
@@ -18,5 +18,5 @@ const parseMessage = (txMessage: string) => {
     };
     return parsedMessage;
   }
-  throw Error('It is not apostille message');
+  throw new Error('It is not apostille message');
 };
