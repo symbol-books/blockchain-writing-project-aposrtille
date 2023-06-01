@@ -7,8 +7,8 @@ import {
   TransferTransaction,
   MultisigAccountModificationTransaction,
 } from 'symbol-sdk';
-import { ApostilleTransaction } from './ApostilleTransaction';
-import { MetadataKeyHelper } from './MetadataKey';
+import { ApostilleTransaction } from '../ApostilleTransaction';
+import { MetadataKeyHelper } from '../MetadataKey';
 
 const account = Account.generateNewAccount(NetworkType.TEST_NET);
 
