@@ -3,11 +3,13 @@ import { KeyGenerator, UInt64 } from 'symbol-sdk';
 export const MetadataKey = {
   title: 'A801BEEB799108BC',
   filename: 'D298EBA89C34461D',
+  description: '9E30087F94867CF9',
 };
 
 const keyToNameMap = {
   [MetadataKey.title]: 'Title',
   [MetadataKey.filename]: 'Filename',
+  [MetadataKey.description]: 'Description',
 };
 
 export class MetadataKeyHelper {

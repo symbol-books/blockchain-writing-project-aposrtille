@@ -26,13 +26,13 @@ export class ApostilleTransaction {
   }
 
   public static create(
-    blob: ArrayBuffer,
+    data: ArrayBuffer,
     fileName: string,
     owner: string,
     option?: ApostilleOption
   ) {
     const apostilleAccount = ApostilleAccount.create(fileName, owner);
-    const signedHash = apostilleAccount.getSignedHash(blob);
+    const signedHash = apostilleAccount.getSignedHash(data);
     const hashFuncId = '83';
     const txMsg = `fe4e5459${hashFuncId}${signedHash}`; // fe4e5459 : checkSum , 83 : sha256 , {signedHash} : signedHash
     return new ApostilleTransaction(apostilleAccount, txMsg, option);
@@ -112,7 +112,6 @@ export class ApostilleTransaction {
     const optionTxs = this.createOptionTransactions();
 
     const innerTxs = [coreTx, ...optionTxs];
-    console.log({ innerTxs });
     const aggTx = AggregateTransaction.createComplete(
       Deadline.create(epochAdjustment),
       innerTxs,

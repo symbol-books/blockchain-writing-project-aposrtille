@@ -11,7 +11,7 @@ export class ApostilleAccount {
 
   private constructor(fileName: string, owner: PublicAccount) {
     const now = new Date();
-    const seed = `${fileName}${now.toString()}`;
+    const seed = `${fileName}-${owner.publicKey}-${now.toString()}`;
     const hash = sha256.update(seed).hex();
     const privateKey = this.fixPrivateKey(hash);
     const account = Account.createFromPrivateKey(privateKey, 152);
