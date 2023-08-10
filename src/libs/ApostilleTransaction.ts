@@ -83,20 +83,6 @@ export class ApostilleTransaction {
           }
         });
 
-        // if (this.option.metadata.description) {
-        //   const descriptionMetadataTransaction = this.createMetadataTransaction(
-        //     'description',
-        //     this.option.metadata.description
-        //   );
-        //   txs.push(descriptionMetadataTransaction);
-        // }
-        // if (this.option.metadata.title) {
-        //   const titleMetadataTransaction = this.createMetadataTransaction(
-        //     'title',
-        //     this.option.metadata.title
-        //   );
-        //   txs.push(titleMetadataTransaction);
-        // }
       }
       if (this.option.isOwner) {
         const multisigTx = this.createOwnerTransaction();
